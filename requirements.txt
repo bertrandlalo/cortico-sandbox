@@ -1,0 +1,5 @@
+timeflux
+timeflux_dsp
+jupyter 
+matplotlib
+mne
