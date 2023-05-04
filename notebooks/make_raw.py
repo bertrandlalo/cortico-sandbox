@@ -22,7 +22,11 @@ def make_raw(
 
     # Extract annotations
     flashes = events.loc[events["label"] == "flash_begins"]
-    onsets = flashes.index.values.astype(np.int64) * 1e-9
+    mne_times = raw.times + recording_times[0]
+    signal_onsets = flashes.index.values.astype(np.int64) * 1e-9
+    mne_onsets = np.array(
+        [mne_times[np.argmin(abs(recording_times - onset))] for onset in signal_onsets]
+    )
     groups = []
     labels = []
     for meta in flashes["data"]:
@@ -35,7 +39,7 @@ def make_raw(
         else:
             label = "unknown"
         labels.append(label)
-    annotations = mne.Annotations(onsets, 0, labels, orig_time=0)
+    annotations = mne.Annotations(mne_onsets, 0, labels, orig_time=0)
 
     raw.set_annotations(annotations)
     annotations
